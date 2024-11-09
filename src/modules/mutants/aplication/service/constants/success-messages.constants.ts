@@ -1,1 +1,1 @@
-export const dnaMutantSuccessMessage = 'DNA is mutant';
+export const mutantDnaSuccessMessage = 'DNA is mutant';

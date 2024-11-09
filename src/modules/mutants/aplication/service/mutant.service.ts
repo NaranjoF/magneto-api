@@ -4,7 +4,7 @@ import {
   IDnaRepository,
 } from '../repository/dna.repository.interface';
 import { dnaHumanError } from './constants/error-messages.constants';
-import { dnaMutantSuccessMessage } from './constants/success-messages.constants';
+import { mutantDnaSuccessMessage } from './constants/success-messages.constants';
 
 @Injectable()
 export class MutantService {
@@ -88,7 +88,7 @@ export class MutantService {
       return dnaHumanError;
     }
 
-    return dnaMutantSuccessMessage;
+    return mutantDnaSuccessMessage;
   }
 
   async calculateStatistics() {
