@@ -18,6 +18,10 @@ lerna-debug.log*
 # Tests
 /coverage
 /.nyc_output
+data/tests.*.*db
+
+# Docker
+data/mysql/*
 
 # IDEs and editors
 /.idea
