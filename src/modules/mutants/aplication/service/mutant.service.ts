@@ -90,4 +90,21 @@ export class MutantService {
 
     return dnaMutantSuccessMessage;
   }
+
+  async calculateStatistics() {
+    const humanDna = await this.dnaRepository.getAll({ is_mutant: false });
+    const mutantDna = await this.dnaRepository.getAll({ is_mutant: true });
+
+    const ratio = mutantDna.length / humanDna.length;
+
+    const formattedRatio = Number.isInteger(ratio)
+      ? ratio
+      : Number(ratio.toFixed(1));
+
+    return {
+      count_mutant_dna: mutantDna.length,
+      count_human_dna: humanDna.length,
+      ratio: formattedRatio,
+    };
+  }
 }
