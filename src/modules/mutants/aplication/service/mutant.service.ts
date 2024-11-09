@@ -1,8 +1,18 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
+import {
+  DNA_REPOSITORY,
+  IDnaRepository,
+} from '../repository/dna.repository.interface';
+import { dnaHumanError } from './constants/error-messages.constants';
+import { dnaMutantSuccessMessage } from './constants/success-messages.constants';
 
 @Injectable()
 export class MutantService {
   private readonly requiredSequences = 2;
+
+  constructor(
+    @Inject(DNA_REPOSITORY) private readonly dnaRepository: IDnaRepository,
+  ) {}
 
   private countRepeatedSequences(sequence: string): number {
     const regex = /(A{4}|T{4}|C{4}|G{4})/g;
@@ -60,13 +70,41 @@ export class MutantService {
     );
   }
 
-  isMutant(dna: string[]): boolean {
+  async isMutant(dna: string[]): Promise<string> {
     const totalSequences = [
       this.countHorizontalSequences(dna),
       this.countVerticalSequences(dna),
       this.countDiagonalSequences(dna),
     ].reduce((acc, count) => acc + count, 0);
 
-    return totalSequences >= this.requiredSequences;
+    const isMutantDna = totalSequences >= this.requiredSequences;
+
+    await this.dnaRepository.save({
+      dna_sequence: dna,
+      is_mutant: isMutantDna,
+    });
+
+    if (!isMutantDna) {
+      return dnaHumanError;
+    }
+
+    return dnaMutantSuccessMessage;
+  }
+
+  async calculateStatistics() {
+    const humanDna = await this.dnaRepository.getAll({ is_mutant: false });
+    const mutantDna = await this.dnaRepository.getAll({ is_mutant: true });
+
+    const ratio = mutantDna.length / humanDna.length;
+
+    const formattedRatio = Number.isInteger(ratio)
+      ? ratio
+      : Number(ratio.toFixed(1));
+
+    return {
+      count_mutant_dna: mutantDna.length,
+      count_human_dna: humanDna.length,
+      ratio: formattedRatio,
+    };
   }
 }

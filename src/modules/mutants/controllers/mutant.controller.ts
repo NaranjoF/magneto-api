@@ -1,21 +1,22 @@
-import { Body, Controller, ForbiddenException, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post } from '@nestjs/common';
 import { MutantService } from '../aplication/service/mutant.service';
-import { CreateMutantDto } from './dto/create.mutant.dto';
-import { dnaHumanError } from './constants/error-messages.constants';
-import { dnaMutantSuccessMessage } from './constants/success-messages.constants';
+import { CreateDnaDTO } from './dto/create.dna.dto';
 
 @Controller('mutant')
 export class MutantController {
   constructor(private readonly mutantService: MutantService) {}
 
+  @Get('/stats')
+  async getStats() {
+    return await this.mutantService.calculateStatistics();
+  }
+
   @Post()
-  createMutant(@Body() dto: CreateMutantDto) {
-    const createMutantResult = this.mutantService.isMutant(dto.dna);
+  async createDna(@Body() dto: CreateDnaDTO): Promise<{
+    message: string;
+  }> {
+    const createMutantResult = await this.mutantService.isMutant(dto.dna);
 
-    if (!createMutantResult) {
-      throw new ForbiddenException(dnaHumanError);
-    }
-
-    return { message: dnaMutantSuccessMessage };
+    return { message: createMutantResult };
   }
 }
