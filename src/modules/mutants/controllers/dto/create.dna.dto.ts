@@ -5,7 +5,7 @@ import {
   nitrogenousBaseInvalidError,
   nitrogenousBaseTypeError,
 } from './constants/error-messages.constants';
-export class CreateMutantDto {
+export class CreateDnaDTO {
   @IsArray({ message: dnaTypeError })
   @ArrayNotEmpty({ message: emptyDnaError })
   @IsString({ each: true, message: nitrogenousBaseTypeError })
